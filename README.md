@@ -30,7 +30,7 @@ Cold/side path (optional async):
 - explicit state machines (execution + order lifecycle)
 - measure tail latency, not just averages
 
-## Roadmap (High Level)
+## Roadmap (Execution Order)
 
 Completed:
 
@@ -42,20 +42,42 @@ Completed:
 - Phase 6: OMS + mock gateway + order lifecycle state transitions
 - Phase 6.5: OMS transition observability and reject-path visibility
 
-Planned:
+Planned (priority order):
 
-- Phase 7: resume-ready realism + benchmarking
-  - reproducible benchmark harness + CI regression gates
-  - stronger risk controls (`max_loss`, `kill_switch`, stale data guards)
-  - baseline vs optimized latency evidence tables
+- Phase 7-A: CI deterministic replay gate (highest priority)
+  - add replay-diff check in CI and fail build when output drifts unexpectedly
+  - lock deterministic run config (input file, mode, seed policy if needed)
+  - done when: every PR must pass deterministic replay regression checks
+
+- Phase 7-B: benchmark harness + frozen datasets
+  - add repeatable benchmark scripts with fixed replay datasets
+  - report `p50/p99/p99.9/max/tail_mean` for baseline scenarios
+  - include sync vs async side-channel comparison
+  - done when: latency tables are reproducible across runs and commits
+
+- Phase 7-C: risk realism upgrade
+  - add `max_loss`, `kill_switch`, and stale-market-data guard
+  - expose explicit reject reasons and risk counters in run summary
+  - done when: risk controls are test-covered and visible in replay outputs
+
+- Phase 7-D: failure-oriented behavior tests
+  - model and test late fill vs cancel ack race
+  - model and test duplicate/out-of-order venue events
+  - add replay-gap / malformed-tick handling policy with tests
+  - done when: failure-path semantics are deterministic and unit/integration tested
+
+- Phase 8: property-style invariants + recovery semantics
+  - add randomized invariants for accounting/risk/order-state correctness
+  - add snapshot + journal replay recovery check (state reconstruction equality)
+  - done when: post-recovery state is verified equal to pre-crash reference state
 
 ## Immediate TODOs
 
-- add reproducible benchmark scripts and fixed replay datasets
-- add deterministic replay diff check in CI
-- extend risk engine with loss/staleness guards
-- add property-style accounting/risk invariants tests
-- publish benchmark report section in README
+- implement Phase 7-A CI deterministic replay gate
+- implement Phase 7-B benchmark harness and publish first latency evidence table
+- implement Phase 7-C risk controls (`max_loss`, `kill_switch`, stale-data guard)
+- implement Phase 7-D failure-path deterministic tests
+- prepare Phase 8 invariants + recovery scaffolding
 
 ## Build & Run
 
