@@ -435,6 +435,34 @@ Current limitation:
 - still no real network protocol integration; gateway remains deterministic in-process simulation
 - reject behavior currently uses deterministic test-oriented rules rather than market microstructure-calibrated probabilities
 
+### Phase 7: Resume-Ready Realism And Benchmarking
+
+Goal:
+
+- move from teaching kernel to interview-competitive side project
+- add realistic market microstructure components and measurable engineering evidence
+- make performance and correctness claims reproducible
+
+Scope:
+
+- add a minimal L2 top-N book view and queue-position-aware execution evolution
+- extend risk controls with `max_drawdown`, `kill_switch`, and stale-data guards
+- add benchmark harness with stable replay datasets and pinned run configuration
+- add CI gates for build, tests, and deterministic replay regression
+- publish reproducible before/after latency and tail-latency comparisons
+
+Success criteria:
+
+- repository includes repeatable benchmark commands and fixed datasets
+- README reports `p50/p99/p99.9/max/tail_mean_99` for at least one baseline and one optimized run
+- deterministic replay regression is automatically checked in CI
+- risk and accounting invariants are covered by both example tests and randomized/property-style tests
+
+Current limitation:
+
+- not yet implemented
+- this phase is the recommended next step for converting current progress into resume-ready project evidence
+
 ## Required Development Order
 
 Implementation must follow this order:
@@ -481,6 +509,34 @@ To make the project stronger for more systems-oriented low-latency interviews, l
 - Phase 3 for asynchronous decoupling with SPSC
 - Phase 5 for execution realism and market microstructure discussion
 - Phase 6 for realistic OMS/connectivity and external state consistency
+- Phase 7 for benchmark evidence, production-style risk controls, and reproducible engineering claims
+
+## Resume-Ready Upgrade Checklist
+
+If your target is "strong side project on resume", prioritize the following in order:
+
+1. realism upgrades (execution + queue dynamics + cost model)
+2. engineering hardening (CI, deterministic regression, config discipline)
+3. measurable evidence (latency tables, tail behavior, profiling deltas)
+
+Concrete additions to land:
+
+- market realism:
+  - add L2-aware queue progression signals (still deterministic under replay)
+  - include fees/slippage/impact in post-trade reporting
+- risk realism:
+  - add hard guards: `max_position`, `max_loss`, `kill_switch`, `stale_quote_guard`
+  - emit explicit reject reasons and risk counters in summary output
+- reproducibility:
+  - add benchmark scripts with fixed run args and dataset references
+  - add CI workflow for build + tests + deterministic replay diff check
+- evidence:
+  - report baseline vs optimized latency (`p50/p99/p99.9/max/tail_mean_99`)
+  - report drops/backpressure counters for async side-channel saturation
+
+Resume-style project statement template:
+
+- "Built a deterministic C++20 low-latency trading kernel (fixed-point pricing, replay-driven OMS/execution state machines) with validated accounting invariants, async side-channel logging via SPSC ring buffer, and benchmarked tail-latency improvements (`p99/p99.9/tail mean`) under controlled replay workloads."
 
 ## Recommended Reading Order
 
